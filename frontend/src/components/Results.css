@@ -1,0 +1,50 @@
+.results-section { padding: 1rem 0 3rem; }
+.score-card {
+  display: flex; align-items: center; gap: 2.5rem; flex-wrap: wrap;
+  background: var(--bg-raised);
+  border: 1px solid var(--line); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 2.25rem 2.5rem; margin-bottom: 1.75rem;
+}
+.score-ring { position: relative; width: 140px; height: 140px; flex-shrink: 0; }
+.score-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ring-bg { fill: none; stroke: var(--bg-inset); stroke-width: 10; }
+.ring-fg {
+  fill: none; stroke-width: 10; stroke-linecap: round;
+  stroke-dasharray: 327;
+  transition: stroke-dashoffset 1s cubic-bezier(0.22, 1, 0.36, 1), stroke 0.4s;
+}
+.score-value {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-size: 2.2rem; font-weight: 700;
+}
+.score-denominator { font-size: 1rem; color: var(--ink-faint); margin-left: 2px; font-weight: 500; }
+.score-copy h2 { font-size: 1.6rem; margin-bottom: 0.4rem; }
+.score-copy p { color: var(--ink-soft); max-width: 480px; }
+
+.skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+.skill-card {
+  background: var(--bg-raised);
+  border: 1px solid var(--line); border-radius: var(--radius-lg);
+  padding: 1.75rem; box-shadow: var(--shadow-sm);
+}
+.skill-card-present { border-top: 3px solid var(--yes); }
+.skill-card-missing { border-top: 3px solid var(--no); }
+.skill-card-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 1.1rem; }
+.skill-card h3 { font-size: 1.05rem; }
+.skill-count { color: var(--ink-faint); font-size: 0.85rem; font-weight: 500; }
+.skill-list { list-style: none; display: flex; flex-wrap: wrap; gap: 0.55rem; }
+.skill-list li {
+  padding: 0.4rem 0.95rem; border-radius: var(--radius-pill);
+  font-size: 0.85rem; font-weight: 600;
+}
+.skill-card-present .skill-list li { background: var(--yes-soft); color: var(--yes); }
+.skill-card-missing .skill-list li { background: var(--no-soft); color: var(--no); }
+
+.disclaimer { text-align: center; color: var(--ink-faint); font-size: 0.8rem; margin-top: 2rem; }
+
+@media (max-width: 720px) {
+  .skills-grid { grid-template-columns: 1fr; }
+  .score-card { padding: 1.75rem; gap: 1.5rem; }
+}
