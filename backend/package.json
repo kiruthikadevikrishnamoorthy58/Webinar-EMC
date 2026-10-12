@@ -7,9 +7,10 @@
     "start": "node src/index.js"
   },
   "dependencies": {
-    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
+    "express-rate-limit": "^8.7.1",
+    "helmet": "^8.3.0",
     "mongoose": "^8.9.5",
     "multer": "^2.0.2",
     "pdf-parse": "^1.1.1"

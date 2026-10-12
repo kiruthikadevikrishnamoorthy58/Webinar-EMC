@@ -2,8 +2,8 @@ import './HowItWorks.css'
 
 export default function HowItWorks() {
   const steps = [
-    { n: 1, title: 'Upload', text: 'Drop in your resume as a PDF. In this demo nothing is sent anywhere.' },
-    { n: 2, title: 'Parse', text: 'The parser extracts your text and matches it against the skills a role asks for.' },
+    { n: 1, title: 'Upload', text: 'Upload a PDF and paste a job description. The PDF is processed in memory, not retained as a file.' },
+    { n: 2, title: 'Parse', text: 'The job description, filename, and results are saved in the app database. If AI is enabled, extracted resume text is sent to the configured AI provider.' },
     { n: 3, title: 'Score', text: 'You get a 0–100 score plus the exact skills present and missing.' },
   ]
 

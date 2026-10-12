@@ -1,8 +1,6 @@
 import { useRef, useState } from 'react'
-import { mockAnalyze, validateFile } from '../utils/mockParser'
+import { MAX_FILE_MB, MAX_JOB_DESCRIPTION_CHARACTERS, validateFile } from '../utils/validation'
 import './Dropzone.css'
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
 export default function Dropzone({ onAnalyzed }) {
   const fileInput = useRef(null)
@@ -16,6 +14,8 @@ export default function Dropzone({ onAnalyzed }) {
   function handleFile(file) {
     const problem = validateFile(file)
     if (problem) {
+      setSelectedFile(null)
+      setFileName('')
       setError(problem)
       return
     }
@@ -36,6 +36,11 @@ export default function Dropzone({ onAnalyzed }) {
       return
     }
 
+    if (jobDescription.length > MAX_JOB_DESCRIPTION_CHARACTERS) {
+      setError(`Job description must be no longer than ${MAX_JOB_DESCRIPTION_CHARACTERS} characters.`)
+      return
+    }
+
     setError(null)
     setState('analyzing')
 
@@ -44,21 +49,26 @@ export default function Dropzone({ onAnalyzed }) {
       formData.append('resume', file)
       formData.append('jd', jobDescription)
 
-      const response = await fetch(`${API_URL}/api/analyze`, {
+      const response = await fetch('/api/analyze', {
         method: 'POST',
         body: formData,
       })
 
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.error || 'Failed to analyze resume')
+      const data = await response.json().catch(() => null)
+      if (!response.ok) throw new Error(data?.error || `Analysis failed (${response.status}).`)
+      if (!data || typeof data.score !== 'number' || !Array.isArray(data.present) || !Array.isArray(data.missing)) {
+        throw new Error('The analysis service returned an invalid response.')
+      }
 
       setState('done')
       onAnalyzed(data)
-      return
-    } catch (_err) {
-      const fallback = await mockAnalyze(file.name, jobDescription)
-      setState('done')
-      onAnalyzed(fallback)
+    } catch (err) {
+      setState('idle')
+      setError(err instanceof TypeError
+        ? 'Could not reach the analysis service. Please try again.'
+        : err instanceof Error
+          ? err.message
+          : 'Failed to analyze resume.')
     }
   }
 
@@ -83,9 +93,11 @@ export default function Dropzone({ onAnalyzed }) {
           id="jd-text"
           className="jd-input"
           value={jdText}
+          maxLength={MAX_JOB_DESCRIPTION_CHARACTERS}
           onChange={(e) => setJdText(e.target.value)}
           placeholder="Paste the job description here so the resume can be compared against the required skills..."
         />
+        <p className="dropzone-hint">Maximum {MAX_JOB_DESCRIPTION_CHARACTERS.toLocaleString()} characters</p>
 
         <div
           className={classes}
@@ -127,7 +139,7 @@ export default function Dropzone({ onAnalyzed }) {
                 </svg>
               </div>
               <p className="dropzone-title">Drop your resume here</p>
-              <p className="dropzone-hint">or <span className="link">browse files</span> · PDF only · max 5&nbsp;MB</p>
+              <p className="dropzone-hint">or <span className="link">browse files</span> · PDF only · max {MAX_FILE_MB}&nbsp;MB</p>
             </div>
           )}
 
@@ -150,6 +162,11 @@ export default function Dropzone({ onAnalyzed }) {
             </div>
           )}
         </div>
+
+        <p className="privacy-note">
+          Your PDF is processed in memory and not saved. Your job description, filename, and results are stored in the app database.
+          If AI is enabled, extracted resume text is sent to the configured AI provider.
+        </p>
 
         <div className="action-row">
           <button

@@ -1,31 +1,78 @@
 import 'dotenv/config'
 import express from 'express'
-import cors from 'cors'
+import helmet from 'helmet'
 import mongoose from 'mongoose'
 import analyzeRouter from './routes/analyze.js'
 import { config } from './config.js'
 
 const app = express()
+let connectionPromise
 
-app.use(cors({ origin: config.corsOrigin }))
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
+app.set('trust proxy', 1)
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+      fontSrc: ["'self'", 'https://fonts.gstatic.com', 'data:'],
+      imgSrc: ["'self'", 'data:'],
+      connectSrc: ["'self'", 'https://fonts.googleapis.com', 'https://fonts.gstatic.com'],
+      objectSrc: ["'none'"],
+      baseUri: ["'self'"],
+      frameAncestors: ["'none'"],
+    },
+  },
+}))
+app.use(express.json({ limit: '16kb' }))
+app.use(express.urlencoded({ extended: true, limit: '16kb' }))
 
 app.get('/api/health', (_req, res) => {
-  res.json({ ok: true })
+  res.json({ ok: true, database: mongoose.connection.readyState === 1 })
+})
+
+async function connectToDatabase() {
+  if (process.env.VERCEL && !process.env.MONGODB_URI) {
+    throw new Error('MONGODB_URI must be configured in the Vercel project')
+  }
+
+  if (mongoose.connection.readyState === 1) return
+  if (!connectionPromise) {
+    connectionPromise = mongoose.connect(config.mongoUri, { serverSelectionTimeoutMS: 5000 }).catch((error) => {
+      connectionPromise = null
+      throw error
+    })
+  }
+  await connectionPromise
+}
+
+mongoose.connection.on('disconnected', () => {
+  connectionPromise = null
+})
+
+app.use('/api', (req, res, next) => {
+  connectToDatabase()
+    .then(next)
+    .catch((error) => {
+      console.error('[db] connection failed:', error.message)
+      res.status(503).json({ error: 'Database unavailable' })
+    })
 })
 
 app.use('/api', analyzeRouter)
 
-mongoose
-  .connect(config.mongoUri)
-  .then(() => {
-    console.log(`[db] connected to MongoDB`)
-    app.listen(config.port, () => {
-      console.log(`[server] listening on http://localhost:${config.port}`)
+if (process.env.VERCEL !== '1') {
+  connectToDatabase()
+    .then(() => {
+      console.log('[db] connected to MongoDB')
+      app.listen(config.port, () => {
+        console.log(`[server] listening on http://localhost:${config.port}`)
+      })
     })
-  })
-  .catch((err) => {
-    console.error('[db] connection failed:', err.message)
-    process.exit(1)
-  })
+    .catch((error) => {
+      console.error('[db] connection failed:', error.message)
+      process.exit(1)
+    })
+}
+
+export default app

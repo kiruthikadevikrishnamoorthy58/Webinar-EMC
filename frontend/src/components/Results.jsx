@@ -16,7 +16,7 @@ function summaryFor(score) {
 }
 
 export default function Results({ result }) {
-  const { score, present, missing, presentSkills = [], missingSkills = [], summary } = result
+  const { score, present, missing, presentSkills = [], missingSkills = [], summary, evaluationMethod } = result
   const presentList = present ?? presentSkills
   const missingList = missing ?? missingSkills
   const [displayScore, setDisplayScore] = useState(0)
@@ -82,7 +82,11 @@ export default function Results({ result }) {
           </div>
         </div>
 
-        <p className="disclaimer">Mock demo — results are simulated. Swap in a real parser API to score actual resumes.</p>
+        <p className="disclaimer">
+          {evaluationMethod === 'ai'
+            ? 'AI-assisted evaluation. Treat this score as guidance and review results for your role.'
+            : 'AI evaluation is unavailable; this score uses rule-based skill matching and may be less complete.'}
+        </p>
       </div>
     </section>
   )

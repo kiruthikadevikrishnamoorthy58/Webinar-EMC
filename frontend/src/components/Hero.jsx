@@ -5,7 +5,7 @@ export default function Hero() {
         <div className="hero-copy">
           <span className="badge">
             <span className="badge-dot" />
-            Mock demo · nothing leaves your browser
+            Resume + job description analysis
           </span>
           <h1>
             Your resume,<br />
@@ -25,9 +25,9 @@ export default function Hero() {
             <a href="#how" className="btn btn-ghost btn-lg">How it works</a>
           </div>
           <ul className="hero-stats">
-            <li><strong>4</strong><span>skills scored</span></li>
-            <li><strong>0s</strong><span>data uploaded</span></li>
-            <li><strong>1</strong><span>PDF needed</span></li>
+            <li><strong>0–100</strong><span>match score</span></li>
+            <li><strong>PDF</strong><span>processed, not stored</span></li>
+            <li><strong>AI</strong><span>or rule-based scoring</span></li>
           </ul>
         </div>
 
