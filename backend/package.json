@@ -4,7 +4,9 @@
   "type": "module",
   "scripts": {
     "dev": "node --watch src/index.js",
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "db:up": "docker compose -f ../compose.yaml up -d mongodb",
+    "db:down": "docker compose -f ../compose.yaml stop mongodb"
   },
   "dependencies": {
     "dotenv": "^16.4.5",

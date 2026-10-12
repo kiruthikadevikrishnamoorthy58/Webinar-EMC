@@ -27,8 +27,17 @@ app.use(helmet({
 app.use(express.json({ limit: '16kb' }))
 app.use(express.urlencoded({ extended: true, limit: '16kb' }))
 
-app.get('/api/health', (_req, res) => {
-  res.json({ ok: true, database: mongoose.connection.readyState === 1 })
+app.get('/api/health', async (_req, res) => {
+  try {
+    await connectToDatabase()
+    if (!mongoose.connection.db) return res.status(503).json({ ok: false, database: false })
+
+    await mongoose.connection.db.admin().ping()
+    return res.json({ ok: true, database: true })
+  } catch (error) {
+    console.error('[health] database ping failed:', error.message)
+    return res.status(503).json({ ok: false, database: false })
+  }
 })
 
 async function connectToDatabase() {
