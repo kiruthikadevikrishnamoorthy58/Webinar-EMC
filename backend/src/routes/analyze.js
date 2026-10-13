@@ -2,6 +2,7 @@ import express from 'express'
 import multer from 'multer'
 import rateLimit from 'express-rate-limit'
 import Analysis from '../models/Analysis.js'
+import { connectToDatabase } from '../database.js'
 import { matchSkills, extractPdfText } from '../utils/skillMatcher.js'
 import { evaluateResumeWithAI } from '../utils/aiEvaluator.js'
 
@@ -44,7 +45,13 @@ router.post('/analyze', analyzeLimiter, upload.single('resume'), async (req, res
       return res.status(400).json({ error: `Job description must be no longer than ${MAX_JD_CHARACTERS} characters` })
     }
 
-    const extractedText = await extractPdfText(req.file.buffer)
+    let extractedText
+    try {
+      extractedText = await extractPdfText(req.file.buffer)
+    } catch (error) {
+      console.warn('[analyze] PDF text extraction failed:', error.message)
+      return res.status(422).json({ error: 'Could not read this PDF. Please upload a valid, text-based PDF.' })
+    }
     if (!extractedText.trim()) {
       return res.status(422).json({ error: 'No selectable text was found in the PDF. Scanned resumes need OCR.' })
     }
@@ -54,22 +61,33 @@ router.post('/analyze', analyzeLimiter, upload.single('resume'), async (req, res
     const result = aiResult || matchSkills(resumeText, req.body.jd)
     const evaluationMethod = aiResult ? 'ai' : 'rules'
 
-    const saved = await Analysis.create({
-      fileName: req.file.originalname.slice(0, 255),
-      jdText: req.body.jd.trim(),
-      score: result.score,
-      presentSkills: result.presentSkills || result.present || [],
-      missingSkills: result.missingSkills || result.missing || [],
-      evaluationMethod,
-    })
+    let saved
+    let storageWarning = ''
+
+    try {
+      await connectToDatabase()
+      saved = await Analysis.create({
+        fileName: req.file.originalname.slice(0, 255),
+        jdText: req.body.jd.trim(),
+        score: result.score,
+        presentSkills: result.presentSkills || result.present || [],
+        missingSkills: result.missingSkills || result.missing || [],
+        evaluationMethod,
+      })
+    } catch (error) {
+      console.warn('[analyze] result not saved; database unavailable:', error.message)
+      storageWarning = 'Analysis completed, but could not be saved because the database is unavailable.'
+    }
 
     res.json({
-      id: saved._id,
+      id: saved?._id,
       score: result.score,
       present: result.presentSkills || result.present || [],
       missing: result.missingSkills || result.missing || [],
       summary: result.summary || '',
       evaluationMethod,
+      saved: Boolean(saved),
+      storageWarning,
     })
   } catch (err) {
     console.error('[analyze]', err.message)

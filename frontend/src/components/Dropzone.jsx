@@ -164,8 +164,8 @@ export default function Dropzone({ onAnalyzed }) {
         </div>
 
         <p className="privacy-note">
-          Your PDF is processed in memory and not saved. Your job description, filename, and results are stored in the app database.
-          If AI is enabled, extracted resume text is sent to the configured AI provider.
+          Your PDF is processed in memory and not saved as a file. If AI is enabled, extracted resume text is sent to the configured AI provider.
+          When the database is available, the job description, filename, and results are stored.
         </p>
 
         <div className="action-row">
