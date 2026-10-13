@@ -18,7 +18,6 @@ function summaryFor(score) {
 export default function Results({ result }) {
   const {
     score,
-    requiredSkills = [],
     present,
     missing,
     presentSkills = [],
@@ -73,22 +72,15 @@ export default function Results({ result }) {
         </div>
 
         <div className="skills-grid">
-          <div className="skill-card skill-card-required">
-            <div className="skill-card-head">
-              <h3>Skills needed for this role</h3>
-              <span className="skill-count">{requiredSkills.length} required</span>
-            </div>
-            <ul className="skill-list">
-              {requiredSkills.map((skill) => <li key={skill}>{skill}</li>)}
-            </ul>
-          </div>
           <div className="skill-card skill-card-present">
             <div className="skill-card-head">
               <h3>Skills present</h3>
               <span className="skill-count">{presentList.length} found</span>
             </div>
             <ul className="skill-list">
-              {presentList.map((skill) => <li key={skill}>{skill}</li>)}
+              {presentList.length
+                ? presentList.map((skill) => <li key={skill}>{skill}</li>)
+                : <li className="skill-empty">No matching skills found in the resume.</li>}
             </ul>
           </div>
           <div className="skill-card skill-card-missing">
@@ -97,7 +89,9 @@ export default function Results({ result }) {
               <span className="skill-count">{missingList.length} gaps</span>
             </div>
             <ul className="skill-list">
-              {missingList.map((skill) => <li key={skill}>{skill}</li>)}
+              {missingList.length
+                ? missingList.map((skill) => <li key={skill}>{skill}</li>)
+                : <li className="skill-empty">No missing skills identified for this role.</li>}
             </ul>
           </div>
         </div>

@@ -23,7 +23,7 @@
 .score-copy h2 { font-size: 1.6rem; margin-bottom: 0.4rem; }
 .score-copy p { color: var(--ink-soft); max-width: 480px; }
 
-.skills-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
+.skills-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
 .skill-card {
   background: var(--bg-raised);
   border: 1px solid var(--line); border-radius: var(--radius-lg);
@@ -31,7 +31,6 @@
 }
 .skill-card-present { border-top: 3px solid var(--yes); }
 .skill-card-missing { border-top: 3px solid var(--no); }
-.skill-card-required { border-top: 3px solid var(--accent); }
 .skill-card-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 1.1rem; }
 .skill-card h3 { font-size: 1.05rem; }
 .skill-count { color: var(--ink-faint); font-size: 0.85rem; font-weight: 500; }
@@ -42,7 +41,12 @@
 }
 .skill-card-present .skill-list li { background: var(--yes-soft); color: var(--yes); }
 .skill-card-missing .skill-list li { background: var(--no-soft); color: var(--no); }
-.skill-card-required .skill-list li { background: var(--accent-soft); color: var(--accent-strong); }
+.skill-list li.skill-empty {
+  background: transparent;
+  color: var(--ink-faint);
+  font-weight: 400;
+  padding-left: 0;
+}
 
 .disclaimer { text-align: center; color: var(--ink-faint); font-size: 0.8rem; margin-top: 2rem; }
 .save-notice {
