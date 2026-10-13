@@ -3,18 +3,6 @@ import './Results.css'
 
 const RING_LENGTH = 2 * Math.PI * 52
 
-function headlineFor(score) {
-  if (score >= 70) return 'Strong match'
-  if (score >= 50) return 'Good fit'
-  return 'Needs work'
-}
-
-function summaryFor(score) {
-  if (score >= 70) return 'Your resume covers most of the skills recruiters look for in this role.'
-  if (score >= 50) return 'Your resume is in the ballpark — a few key skills would push it higher.'
-  return 'Several core skills are missing from your resume. Focus on the red list below.'
-}
-
 export default function Results({ result }) {
   const {
     score,
@@ -22,10 +10,6 @@ export default function Results({ result }) {
     missing,
     presentSkills = [],
     missingSkills = [],
-    summary,
-    evaluationMethod,
-    saved,
-    storageWarning,
   } = result
   const presentList = present ?? presentSkills
   const missingList = missing ?? missingSkills
@@ -66,8 +50,7 @@ export default function Results({ result }) {
             </div>
           </div>
           <div className="score-copy">
-            <h2>{headlineFor(score)}</h2>
-            <p>{summary || summaryFor(score)}</p>
+            <h2>Resume match score</h2>
           </div>
         </div>
 
@@ -96,16 +79,6 @@ export default function Results({ result }) {
           </div>
         </div>
 
-        <p className="disclaimer">
-          {evaluationMethod === 'ai'
-            ? 'AI-assisted evaluation. Treat this score as guidance and review results for your role.'
-            : 'AI evaluation is unavailable; this score uses rule-based skill matching and may be less complete.'}
-        </p>
-        {saved === false && (
-          <p className="save-notice" role="status">
-            {storageWarning || 'Your score is ready, but this result could not be saved because the database is unavailable.'}
-          </p>
-        )}
       </div>
     </section>
   )

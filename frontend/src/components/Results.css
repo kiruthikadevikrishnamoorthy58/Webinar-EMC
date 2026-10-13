@@ -48,19 +48,6 @@
   padding-left: 0;
 }
 
-.disclaimer { text-align: center; color: var(--ink-faint); font-size: 0.8rem; margin-top: 2rem; }
-.save-notice {
-  max-width: 720px;
-  margin: 1rem auto 0;
-  padding: 0.75rem 1rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-  background: var(--bg-inset);
-  color: var(--ink-soft);
-  font-size: 0.85rem;
-  text-align: center;
-}
-
 @media (max-width: 720px) {
   .skills-grid { grid-template-columns: 1fr; }
   .score-card { padding: 1.75rem; gap: 1.5rem; }

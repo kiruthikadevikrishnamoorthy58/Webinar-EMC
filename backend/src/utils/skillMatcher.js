@@ -6,9 +6,12 @@ import pdfParse from 'pdf-parse'
 
 // Skills the matcher looks for. Extend this list as needed.
 export const SKILLS = [
-  'JavaScript', 'TypeScript', 'Python', 'Java', 'SQL', 'MongoDB',
-  'React', 'Node.js', 'Express', 'HTML', 'CSS', 'Git',
-  'Docker', 'AWS', 'REST APIs', 'Unit Testing', 'CI/CD', 'Linux',
+  'JavaScript', 'TypeScript', 'Python', 'Java', 'C++', 'C#', 'Go', 'Ruby', 'PHP',
+  'SQL', 'PostgreSQL', 'MySQL', 'MongoDB', 'Redis',
+  'React', 'Angular', 'Vue.js', 'Next.js', 'Node.js', 'Express', 'Django', 'Flask',
+  'HTML', 'CSS', 'Git', 'Docker', 'Kubernetes', 'Terraform',
+  'AWS', 'Azure', 'Google Cloud', 'REST APIs', 'GraphQL',
+  'Unit Testing', 'CI/CD', 'Linux', 'Machine Learning', 'Data Analysis', 'Agile',
 ]
 
 // Some skills have alternate spellings on resumes.
@@ -18,13 +21,22 @@ const ALIASES = {
   'CI/CD': ['ci/cd', 'ci cd', 'continuous integration'],
   'Unit Testing': ['unit test', 'jest', 'mocha', 'pytest'],
   'MongoDB': ['mongo'],
+  'C++': ['cpp'],
+  'C#': ['c sharp'],
+  'Google Cloud': ['gcp'],
+  'Vue.js': ['vue'],
+  'PostgreSQL': ['postgres'],
+}
+
+function containsPhrase(text, phrase) {
+  const escaped = phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+')
+  return new RegExp(`(^|[^a-z0-9])${escaped}(?=$|[^a-z0-9])`, 'i').test(text)
 }
 
 function findSkills(text, skills) {
-  const lower = ` ${text.toLowerCase()} `
   return skills.filter((skill) => {
     const phrases = [skill.toLowerCase(), ...(ALIASES[skill] || [])]
-    return phrases.some((p) => lower.includes(p))
+    return phrases.some((phrase) => containsPhrase(text, phrase))
   })
 }
 
