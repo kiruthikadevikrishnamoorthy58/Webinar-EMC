@@ -70,6 +70,7 @@ router.post('/analyze', analyzeLimiter, upload.single('resume'), async (req, res
         fileName: req.file.originalname.slice(0, 255),
         jdText: req.body.jd.trim(),
         score: result.score,
+        requiredSkills: result.requiredSkills || result.presentSkills || result.present || [],
         presentSkills: result.presentSkills || result.present || [],
         missingSkills: result.missingSkills || result.missing || [],
         evaluationMethod,
@@ -82,6 +83,7 @@ router.post('/analyze', analyzeLimiter, upload.single('resume'), async (req, res
     res.json({
       id: saved?._id,
       score: result.score,
+      requiredSkills: result.requiredSkills || result.presentSkills || result.present || [],
       present: result.presentSkills || result.present || [],
       missing: result.missingSkills || result.missing || [],
       summary: result.summary || '',

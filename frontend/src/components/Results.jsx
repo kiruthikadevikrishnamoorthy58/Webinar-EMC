@@ -16,7 +16,18 @@ function summaryFor(score) {
 }
 
 export default function Results({ result }) {
-  const { score, present, missing, presentSkills = [], missingSkills = [], summary, evaluationMethod, saved, storageWarning } = result
+  const {
+    score,
+    requiredSkills = [],
+    present,
+    missing,
+    presentSkills = [],
+    missingSkills = [],
+    summary,
+    evaluationMethod,
+    saved,
+    storageWarning,
+  } = result
   const presentList = present ?? presentSkills
   const missingList = missing ?? missingSkills
   const [displayScore, setDisplayScore] = useState(0)
@@ -62,6 +73,15 @@ export default function Results({ result }) {
         </div>
 
         <div className="skills-grid">
+          <div className="skill-card skill-card-required">
+            <div className="skill-card-head">
+              <h3>Skills needed for this role</h3>
+              <span className="skill-count">{requiredSkills.length} required</span>
+            </div>
+            <ul className="skill-list">
+              {requiredSkills.map((skill) => <li key={skill}>{skill}</li>)}
+            </ul>
+          </div>
           <div className="skill-card skill-card-present">
             <div className="skill-card-head">
               <h3>Skills present</h3>
@@ -73,7 +93,7 @@ export default function Results({ result }) {
           </div>
           <div className="skill-card skill-card-missing">
             <div className="skill-card-head">
-              <h3>Skills missing</h3>
+              <h3>Missing skills to develop</h3>
               <span className="skill-count">{missingList.length} gaps</span>
             </div>
             <ul className="skill-list">
@@ -87,7 +107,11 @@ export default function Results({ result }) {
             ? 'AI-assisted evaluation. Treat this score as guidance and review results for your role.'
             : 'AI evaluation is unavailable; this score uses rule-based skill matching and may be less complete.'}
         </p>
-        {saved === false && <p className="error">{storageWarning || 'This analysis could not be saved because the database is unavailable.'}</p>}
+        {saved === false && (
+          <p className="save-notice" role="status">
+            {storageWarning || 'Your score is ready, but this result could not be saved because the database is unavailable.'}
+          </p>
+        )}
       </div>
     </section>
   )
